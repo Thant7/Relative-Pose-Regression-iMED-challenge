@@ -15,3 +15,27 @@ Follow that checkout's own installation instructions for its environment and any
 External lookup is controlled by `RELOC3R_ROOT` (default `third_party/reloc3r`) and `ROMAV2_ROOT` (default `third_party/RoMaV2`). Cached runs need Reloc3r but do not need RoMaV2. Online runs require an importable `romav2.RoMaV2` with the API used in `models/reloc_roma.py`; no RoMaV2 revision is claimed because its source is absent in the local workspace.
 
 `environment-local.txt` records selected package versions in the existing `miccai_pe` environment at preparation time. It is provenance, not a portable installation command.
+
+## Custom source locations
+
+The standard `third_party/reloc3r` layout works without environment variables. To use a checkout elsewhere, replace the example path below with your own directory.
+
+PowerShell:
+
+```powershell
+$env:RELOC3R_ROOT = "E:/sources/reloc3r"
+```
+
+bash/zsh:
+
+```sh
+export RELOC3R_ROOT="/path/to/reloc3r"
+```
+
+Command Prompt:
+
+```bat
+set RELOC3R_ROOT=E:/sources/reloc3r
+```
+
+The environment variable points to the directory containing the `reloc3r/` Python package and `croco/` submodule. Apply the same convention to `ROMAV2_ROOT` when using an external RoMaV2 checkout for online matching.

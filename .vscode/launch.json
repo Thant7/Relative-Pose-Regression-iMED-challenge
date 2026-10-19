@@ -2,14 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "iMED: forward only (existing workspace)",
+      "name": "iMED: forward only",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/scripts/forward_once.py",
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
-      "env": {"RELOC3R_ROOT": "${workspaceFolder}/../.reloc3r_src"},
-      "args": ["--data-root", "../data", "--roma-cache-root", "../outputs/roma_cache", "--num-workers", "0"],
+      "args": ["--num-workers", "0"],
       "justMyCode": true
     }
   ]

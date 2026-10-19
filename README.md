@@ -36,49 +36,90 @@ tests/                     # numerical refactor and geometry checks
 third_party/               # external source checkouts, excluded from Git
 ```
 
-## Setup
+## Setup from a fresh clone
 
-Use Python 3.10 or newer. Install a compatible PyTorch/torchvision pair for your machine, then install this project:
+The commands below work from the repository root on Windows, Linux or macOS. Use Python 3.10 or newer and install a PyTorch/torchvision pair appropriate for your CPU or CUDA version.
 
-```powershell
+```sh
+git clone https://github.com/Thant7/Relative-Pose-Regression-iMED-challenge.git
+cd Relative-Pose-Regression-iMED-challenge
+python -m venv .venv
+```
+
+Activate the environment using the command for your shell:
+
+| Shell | Command |
+|---|---|
+| Windows PowerShell | `.venv\Scripts\Activate.ps1` |
+| Windows Command Prompt | `.venv\Scripts\activate.bat` |
+| Linux/macOS bash or zsh | `source .venv/bin/activate` |
+
+Install this project and obtain the external Reloc3r source and CroCo submodule:
+
+```sh
 python -m pip install -e .
+git clone --recursive https://github.com/ffrivera0/reloc3r.git third_party/reloc3r
+git -C third_party/reloc3r checkout 761fac648e9c21fd7dcda01ab2ccd4fc20058102
+git -C third_party/reloc3r submodule update --init --recursive
 ```
 
-Reloc3r is an external dependency. The source checkout used in the original workspace is the `ffrivera0/reloc3r` fork at commit `761fac648e9c21fd7dcda01ab2ccd4fc20058102`. Its CroCo submodule and any required positional-embedding extensions must also be available. See [dependencies](docs/dependencies.md).
+Complete any additional setup required by the Reloc3r checkout, including its positional-embedding backend; see [dependencies](docs/dependencies.md). The package automatically finds `third_party/reloc3r`: no machine-specific environment variable is needed. The default weights are `siyan824/reloc3r-512`; first use may download them.
 
-For the existing local workspace, use the already available checkout:
+## Prepare data and correspondence caches
 
-```powershell
-$env:RELOC3R_ROOT = "D:/MICCAI_PE/.reloc3r_src"
+Place your dataset and precomputed RoMa tensors under the repository root:
+
+```text
+Relative-Pose-Regression-iMED-challenge/
+  third_party/reloc3r/             # external source checkout
+  data/
+    train/{sequence}/
+      endoscope1/L/frame_000002.png
+      endoscope2/L/frame_000002.png
+      pose.txt
+    test/{sequence}/...
+  outputs/roma_cache/
+    train/roma_fast/{sequence}/frame_000002.pt
+    test/roma_fast/{sequence}/frame_000002.pt
 ```
 
-On a new machine, place the required source checkout at `third_party/reloc3r`, or set `RELOC3R_ROOT` to its location. The default Reloc3r weights are `siyan824/reloc3r-512`; the first model construction can download these weights.
+Images, ground-truth poses, caches and trained challenge checkpoints are **not included**. Obtain the dataset separately and provide matching precomputed tensors in the [documented cache format](docs/data.md). There is no automatic dataset or cache download in this release. Cached execution does not require installing RoMaV2.
 
-## Run in the existing workspace
+## Run
 
-From `D:/MICCAI_PE/roma_feature_injection`, with the environment above set, run a **forward-only** pass:
+From the repository root, run a **forward-only** pass:
 
-```powershell
-python scripts/forward_once.py --data-root ../data --roma-cache-root ../outputs/roma_cache --num-workers 0
+```sh
+python scripts/forward_once.py --num-workers 0
 ```
 
-This loads one batch and predicts the first and current stereo pairs under `torch.no_grad()`. There is no backward pass or optimizer update. The normalized trajectory prediction is `inverse(C_0) @ C_t`, so one batch involves two stereo-pair model calls.
+This loads one batch and predicts the first and current stereo pairs under `torch.no_grad()`. There is no backward pass or optimizer update. The normalized trajectory prediction is `inverse(C_0) @ C_t`, so one batch involves two stereo-pair model calls. Without `--resume-checkpoint`, the newly initialized regression layers are random; this command checks execution rather than reproducing the challenge score.
 
-Run the original **forward + backward sanity check**:
+Run the **forward + backward sanity check**:
 
-```powershell
-python -m roma_pose --data-root ../data --roma-cache-root ../outputs/roma_cache --num-workers 0
+```sh
+python -m roma_pose --num-workers 0
 ```
 
 The sanity check reports tensor shapes, losses, frozen parameters, and gradient norms. It does not run a training epoch. Its inherited shape assertions assume 512-size inputs, 800 decoder tokens, and 9D rotation output.
 
 Train for ten epochs:
 
-```powershell
-python -m roma_pose --train --data-root ../data --roma-cache-root ../outputs/roma_cache --output-dir outputs/train_only_e10 --epochs 10 --batch-size 4 --lr 2e-5 --decoder-lr 5e-6 --eval-every 1
+```sh
+python -m roma_pose --train --output-dir outputs/train_only_e10 --epochs 10 --batch-size 4 --lr 2e-5 --decoder-lr 5e-6 --eval-every 1
 ```
 
-Commands above are single lines; PowerShell continuation characters are unnecessary. `python -m roma_pose --help` lists all options. Cache mode is the default. Online matching requires an additional RoMaV2 installation and `--online-roma`.
+Default data and cache locations are resolved relative to the repository, not the original author's computer. If you keep assets elsewhere, pass your own paths:
+
+```sh
+python scripts/forward_once.py --data-root /path/to/dataset --roma-cache-root /path/to/roma_cache --num-workers 0
+```
+
+Replace those example paths with your locations; Windows paths such as `E:/datasets/imed` also work. If your external source checkout is elsewhere, set `RELOC3R_ROOT` to that checkout using [your shell's syntax](docs/dependencies.md#custom-source-locations).
+
+Commands above are single lines; continuation characters are unnecessary. `python -m roma_pose --help` lists all options. Cache mode is the default. Online matching requires an additional RoMaV2 installation and `--online-roma`.
+
+For VS Code, open this repository folder, select the Python environment you installed, and choose **iMED: forward only** in Run and Debug. Its launch configuration uses the same repository-relative layout.
 
 ## Method
 

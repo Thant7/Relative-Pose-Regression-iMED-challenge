@@ -17,7 +17,7 @@ Cache lookup:
 {roma_cache_root}/{split}/roma_{setting}/{sequence}/frame_{frame_idx:06d}.pt
 ```
 
-The existing workspace cache is `D:/MICCAI_PE/outputs/roma_cache` with setting `fast`. At preparation time it contained 6,095 train and 1,895 test tensors. A loaded example used a 200 x 256 correspondence grid. These counts describe local files, not files included in Git.
+The default cache location is `outputs/roma_cache` under the repository root, with setting `fast`. The original experiment cache contained 6,095 train and 1,895 test tensors. A loaded example used a 200 x 256 correspondence grid. These counts describe the original experiment assets, not files included in Git. Set `--roma-cache-root` to use another location.
 
 Two cache representations are supported:
 

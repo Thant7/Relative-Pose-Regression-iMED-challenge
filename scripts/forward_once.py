@@ -9,12 +9,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import torch
+from roma_pose.runtime import PROJECT_ROOT
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--data-root", type=Path, default=Path("data"))
-    p.add_argument("--roma-cache-root", type=Path, default=Path("outputs/roma_cache"))
+    p.add_argument("--data-root", type=Path, default=PROJECT_ROOT / "data")
+    p.add_argument("--roma-cache-root", type=Path, default=PROJECT_ROOT / "outputs" / "roma_cache")
     p.add_argument("--split", default="train")
     p.add_argument("--sequences", nargs="*")
     p.add_argument("--max-frames-per-sequence", type=int, default=2)
