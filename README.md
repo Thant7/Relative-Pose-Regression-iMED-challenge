@@ -1,4 +1,4 @@
-# Relative Pose Regresion iMED challenge
+# Relative Pose Regression iMED challenge
 
 Relative pose regression with a frozen Reloc3r image encoder and RoMaV2 correspondences. Correspondences guide a learned residual update to encoder **features**, before the Reloc3r decoder. Positional indices remain unchanged.
 
