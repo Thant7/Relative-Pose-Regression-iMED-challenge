@@ -1,0 +1,15 @@
+# Historical training arguments; set data/cache/output paths for your machine.
+--train
+--epochs 10
+--batch-size 4
+--num-workers 4
+--image-size 512
+--roma-setting fast
+--lr 2e-5
+--decoder-lr 5e-6
+--weight-decay 0.05
+--grad-clip 1.0
+--eval-every 1
+--lambda-r 1.0
+--lambda-t 1.0
+--seed 20260808
