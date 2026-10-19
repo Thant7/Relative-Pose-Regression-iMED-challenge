@@ -1,8 +1,18 @@
 # Relative Pose Regression iMED challenge
 
+**iMED Challenge 2026 winning method — reported ATE RMSE: 2.193 mm.**
+
 Relative pose regression with a frozen Reloc3r image encoder and RoMaV2 correspondences. Correspondences guide a learned residual update to encoder **features**, before the Reloc3r decoder. Positional indices remain unchanged.
 
 This repository organizes `train_reloc3r_romav2_feature_inject_v1.py` from the original research workspace into modules. The original experiment script is preserved in that workspace. This is a code release; datasets, correspondence caches, pretrained weights, and experiment checkpoints are external.
+
+## Challenge result
+
+| Challenge | Reported placement | ATE RMSE |
+|---|---|---|
+| iMED Challenge 2026 | Winner | **2.193 mm** |
+
+The method uses RoMaV2 correspondences to sample matched features between the two images, gates learned feature updates by match confidence, and regresses relative pose through the Reloc3r decoder and a shared pose head. The challenge result and placement were supplied by the project author; the validation checks in this release cover code execution and refactor correctness, rather than reproduction of the challenge score. See [provenance](docs/provenance.md).
 
 ## Repository layout
 

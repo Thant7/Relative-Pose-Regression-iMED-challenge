@@ -14,4 +14,6 @@ Historical configurations, including `outputs/reloc3r_romav2_feature_inject_v1_t
 
 The release fixes one sanity-check issue: it excludes reference-equals-current samples when checking for nonzero pose-head gradients. Comparing a frame with itself can cancel those gradients through first-frame normalization and fail the old assertion despite correct autograd. The training sampler and model equations are unchanged.
 
-No new benchmark accuracy or completed full training run is claimed. Numerical refactor checks and their results are recorded in `VALIDATION.md`. Existing trained weights are external and should be evaluated explicitly before a performance claim is published.
+The project author reports that this method won the iMED Challenge 2026 with **2.193 mm ATE RMSE**. This historical result is recorded from the author's statement; an official leaderboard link, exact submitted checkpoint and full evaluation protocol have not been attached to this release. The code organization and local checks do not independently reproduce that score.
+
+No new benchmark evaluation or completed full training run was performed during this refactor. Refactor checks and their results are recorded in `VALIDATION.md`. Existing trained weights are external.
